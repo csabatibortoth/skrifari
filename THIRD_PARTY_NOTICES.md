@@ -4,7 +4,7 @@ Skrifari includes or may distribute third-party software and materials. Each com
 
 | Component | Version | License / SPDX ID | Source |
 |---|---|---|---|
-| Athena UI (athena-ui-js) | [Pinned version] | MIT | [Athena UI repository URL] |
+| Athena UI (athena-ui-js) | 2.7.0 (pin with ^2.7.0, update deliberately) | MIT | https://github.com/csabatibortoth/athena-ui |
 | [Other component] | [Version] | [SPDX ID] | [Project URL] |
 
 For Athena UI, include the exact MIT license and copyright notice from the version distributed with Skrifari, following the dependency's distribution requirements.

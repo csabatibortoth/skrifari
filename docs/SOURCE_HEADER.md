@@ -4,7 +4,7 @@ Put this at the top of every original source file, adapted to the comment syntax
 
 ```js
 /*
- * Copyright 2026 [COPYRIGHT HOLDER]
+ * Copyright 2026 Csaba Tóth
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.

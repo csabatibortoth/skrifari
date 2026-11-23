@@ -2,8 +2,8 @@
 
 The Skrifari name, logo, and official project branding identify the official Skrifari project. This policy is separate from the Apache License 2.0: the software license does not grant unrestricted rights to use project branding.
 
-Trademark owner: [TRADEMARK-OWNING PERSON OR ENTITY]
-Contact: [TRADEMARK CONTACT EMAIL OR URL]
+Trademark owner: Csaba Tóth
+Contact: https://github.com/csabatibortoth/skrifari/issues
 
 You may use the name Skrifari to accurately identify the original project, describe software as based on or compatible with Skrifari, and provide attribution or links, provided you do not imply official status, endorsement, sponsorship, or affiliation.
 
