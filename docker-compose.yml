@@ -1,0 +1,55 @@
+# Development environment: api, MongoDB, Redis. S3-compatible object storage joins in M4 (MinIO no longer publishes images on Docker Hub: choose then).
+# Usage: cp .env.example .env ; edit the passwords ; docker compose up --build
+# Only the API is published, and only on the loopback interface. MongoDB, Redis and MinIO sit on a private network.
+services:
+  api:
+    build: .
+    environment:
+      NODE_ENV: production
+      SKRIFARI_HOST: 0.0.0.0 # inside the container; the published port below is loopback only
+      SKRIFARI_PORT: '3000'
+      SKRIFARI_MONGODB_URI: mongodb://mongo:27017/skrifari
+      SKRIFARI_REDIS_URL: redis://:${REDIS_PASSWORD:?set REDIS_PASSWORD in .env}@redis:6379
+      SKRIFARI_SESSION_SECRET: ${SKRIFARI_SESSION_SECRET:?set SKRIFARI_SESSION_SECRET in .env (openssl rand -base64 48)}
+    ports:
+      - '127.0.0.1:3000:3000'
+    depends_on:
+      mongo: { condition: service_healthy }
+      redis: { condition: service_healthy }
+    networks: [frontend, backend]
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: ['no-new-privileges:true']
+    restart: unless-stopped
+
+  mongo:
+    image: mongo:8
+    volumes: ['mongo-data:/data/db']
+    healthcheck:
+      test: ['CMD', 'mongosh', '--quiet', '--eval', 'db.adminCommand("ping").ok']
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    networks: [backend]
+    restart: unless-stopped
+
+  redis:
+    image: redis:7-alpine
+    command: ['redis-server', '--requirepass', '${REDIS_PASSWORD:?set REDIS_PASSWORD in .env}', '--save', '', '--appendonly', 'no']
+    healthcheck:
+      test: ['CMD-SHELL', 'redis-cli -a "$$REDIS_PASSWORD" ping | grep -q PONG']
+      interval: 10s
+      timeout: 3s
+      retries: 10
+    environment:
+      REDIS_PASSWORD: ${REDIS_PASSWORD}
+    networks: [backend]
+    restart: unless-stopped
+
+networks:
+  frontend: {}
+  backend:
+    internal: true # no route to the outside: the database network is private
+
+volumes:
+  mongo-data: {}
