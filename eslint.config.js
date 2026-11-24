@@ -15,4 +15,8 @@ export default [
       'prefer-const': 'error',
     },
   },
+  {
+    files: ['apps/admin/public/**/*.js', 'tests/e2e/**/*.js'],
+    languageOptions: { globals: { ...globals.browser, ...globals.node } },
+  },
 ];

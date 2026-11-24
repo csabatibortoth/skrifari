@@ -3,7 +3,8 @@ FROM node:24-alpine AS deps
 WORKDIR /app
 COPY package.json package-lock.json ./
 COPY apps/api/package.json apps/api/
-RUN npm ci --omit=dev --ignore-scripts -w @skrifari/api && npm cache clean --force
+COPY apps/admin/package.json apps/admin/
+RUN npm ci --omit=dev --ignore-scripts -w @skrifari/api -w @skrifari/admin && npm cache clean --force
 
 FROM node:24-alpine
 ENV NODE_ENV=production
@@ -13,6 +14,7 @@ COPY LICENSE NOTICE THIRD_PARTY_NOTICES.md ./
 COPY --from=deps /app/node_modules ./node_modules
 COPY package.json ./
 COPY apps/api ./apps/api
+COPY apps/admin ./apps/admin
 # Never ship local secrets or tests: .dockerignore keeps .env, .git and node_modules out of the context.
 USER node
 EXPOSE 3000

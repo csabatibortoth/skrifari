@@ -1,0 +1,21 @@
+/* Copyright 2026 Csaba Tóth - SPDX-License-Identifier: Apache-2.0 */
+.skrifari-brand {
+  font-weight: 700;
+  text-decoration: none;
+  color: inherit;
+  margin-inline-end: 1rem;
+}
+.skrifari-block {
+  margin-block: 1.5rem;
+}
+.skrifari-row {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-block: 0.75rem;
+}
+.skrifari-login {
+  max-width: 26rem;
+  margin: 3rem auto;
+}

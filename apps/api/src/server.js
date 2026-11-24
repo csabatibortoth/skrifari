@@ -11,6 +11,7 @@ import { createModels } from './database/models.js';
 import { createSessionStore } from './security/sessions.js';
 import { createAudit } from './modules/audit/index.js';
 import { createEventBus } from './events/index.js';
+import adminModule from './modules/admin/index.js';
 import authModule from './modules/auth/index.js';
 import usersModule from './modules/users/index.js';
 import languagesModule from './modules/languages/index.js';
@@ -44,7 +45,7 @@ export function buildServer({ config, mongo, redis }) {
 
   app.addHook('onSend', async (_request, reply) => {
     reply.header('X-Content-Type-Options', 'nosniff');
-    reply.header('Cache-Control', 'no-store');
+    if (!reply.hasHeader('cache-control')) reply.header('Cache-Control', 'no-store');
   });
 
   app.get('/health', async () => ({ status: 'ok' }));
@@ -78,6 +79,8 @@ export function buildServer({ config, mongo, redis }) {
         await api.register(module, context);
     });
   }
+
+  app.register(adminModule);
 
   app.get('/openapi.json', async () => openapi);
 

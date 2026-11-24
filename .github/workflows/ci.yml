@@ -30,6 +30,10 @@ jobs:
       - run: npm test
         env:
           SKRIFARI_TEST_MONGODB_URI: mongodb://127.0.0.1:27017
+      - run: npx playwright install --with-deps chromium
+      - run: npm run test:e2e
+        env:
+          SKRIFARI_TEST_MONGODB_URI: mongodb://127.0.0.1:27017
       - run: npm audit --audit-level=high
   dco:
     if: github.event_name == 'pull_request'
