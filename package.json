@@ -1,0 +1,37 @@
+{
+  "name": "skrifari",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Skrifari: a headless, API-first, multi-site CMS",
+  "license": "Apache-2.0",
+  "author": "Csaba Tóth",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/csabatibortoth/skrifari.git"
+  },
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "start": "npm run start -w @skrifari/api",
+    "dev": "npm run dev -w @skrifari/api",
+    "migrate": "npm run migrate -w @skrifari/api",
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "test": "vitest run",
+    "check": "npm run lint && npm run format:check && npm test"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.0.0",
+    "eslint": "^9.0.0",
+    "globals": "^16.0.0",
+    "prettier": "^3.0.0",
+    "vitest": "^5.1.1"
+  }
+}
