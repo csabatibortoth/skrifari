@@ -6,7 +6,7 @@ import { loadConfig } from '../src/config/index.js';
 
 const config = loadConfig({ NODE_ENV: 'test' });
 const up = { ping: async () => 'PONG' };
-const mongoUp = { db: { admin: () => ({ ping: async () => ({ ok: 1 }) }) } };
+const mongoUp = { db: { admin: () => ({ ping: async () => ({ ok: 1 }) }) }, models: {}, model: () => ({}) };
 const down = {
   ping: async () => {
     throw new Error('connect ECONNREFUSED 10.1.2.3:6379');

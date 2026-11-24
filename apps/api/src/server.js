@@ -7,6 +7,15 @@ import { loadConfig, describeConfig, ConfigError } from './config/index.js';
 import { connectDatabase } from './database/connect.js';
 import { createRedis } from './core/redis.js';
 import { buildOpenApiDocument } from './core/openapi.js';
+import { createModels } from './database/models.js';
+import { createSessionStore } from './security/sessions.js';
+import { createAudit } from './modules/audit/index.js';
+import { createEventBus } from './events/index.js';
+import authModule from './modules/auth/index.js';
+import usersModule from './modules/users/index.js';
+import languagesModule from './modules/languages/index.js';
+import sitesModule from './modules/sites/index.js';
+import auditRoutes from './modules/audit/routes.js';
 
 const VERSION = JSON.parse(readFileSync(new URL('../package.json', import.meta.url), 'utf8')).version;
 const CHECK_TIMEOUT_MS = 2000;
@@ -24,10 +33,11 @@ const withTimeout = (promise) =>
 export function buildServer({ config, mongo, redis }) {
   const app = Fastify({
     logger: {
-      level: config.env === 'test' ? 'silent' : 'info',
+      level: process.env.SKRIFARI_LOG_LEVEL ?? (config.env === 'test' ? 'silent' : 'info'),
       redact: ['req.headers.authorization', 'req.headers.cookie', 'res.headers["set-cookie"]'],
     },
     bodyLimit: 1024 * 1024,
+    ajv: { customOptions: { removeAdditional: false, coerceTypes: true, allErrors: false } }, // refuse unknown fields; coercion is needed for query strings (objects and arrays are never coerced to scalars)
     trustProxy: false, // forwarded headers are never trusted until a proxy allow-list exists (M2)
   });
   const openapi = buildOpenApiDocument(VERSION);
@@ -54,10 +64,28 @@ export function buildServer({ config, mongo, redis }) {
     });
   });
 
+  // The API modules need the database and Redis: without them only health, readiness and the OpenAPI document exist.
+  if (mongo && redis) {
+    const models = createModels(mongo);
+    const events = createEventBus({
+      onError: (error, name) => app.log.error({ err: error, event: name }, 'event handler failed'),
+    });
+    const audit = createAudit(models, app.log);
+    const context = { config, models, sessions: createSessionStore(redis), audit, events, redis };
+    app.decorate('events', events);
+    app.register(async (api) => {
+      for (const module of [authModule, usersModule, languagesModule, sitesModule, auditRoutes])
+        await api.register(module, context);
+    });
+  }
+
   app.get('/openapi.json', async () => openapi);
 
   app.setErrorHandler((error, request, reply) => {
-    request.log.error({ err: error }, 'request failed');
+    if (!error.statusCode || error.statusCode >= 500) request.log.error({ err: error }, 'request failed');
+    if (error.code === 11000) return reply.code(409).send({ error: 'Already exists' });
+    if (error.name === 'ValidationError' || error.name === 'StrictModeError')
+      return reply.code(400).send({ error: 'Invalid data' });
     const code = error.statusCode && error.statusCode < 500 ? error.statusCode : 500;
     reply.code(code).send({ error: code === 500 ? 'Internal Server Error' : error.message });
   });

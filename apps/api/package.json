@@ -8,9 +8,12 @@
   "scripts": {
     "start": "node src/server.js",
     "dev": "NODE_ENV=development node --watch src/server.js",
-    "migrate": "node src/database/migrate-cli.js"
+    "migrate": "node src/database/migrate-cli.js",
+    "create-admin": "node src/cli/create-admin.js"
   },
   "dependencies": {
+    "@fastify/cookie": "^11.1.5",
+    "bullmq": "^6.7.8",
     "fastify": "^5.0.0",
     "ioredis": "^5.0.0",
     "mongoose": "^8.0.0"
