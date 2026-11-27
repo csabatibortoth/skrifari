@@ -19,3 +19,8 @@
   max-width: 26rem;
   margin: 3rem auto;
 }
+/* The tabs of a phone are equal and all on the screen; a long name wraps. Athena UI sizes a tab by its label and scrolls the bar. */
+.athena-menu-responsive.is-tabs .menu-item {
+  flex: 1 1 0;
+  min-width: 0;
+}

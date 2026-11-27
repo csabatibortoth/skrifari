@@ -6,6 +6,6 @@
   "type": "module",
   "description": "The Skrifari admin app: plain ES modules on Athena UI, no build step. Served by the API under /admin/.",
   "dependencies": {
-    "athena-ui-js": "^2.7.1"
+    "athena-ui-js": "^2.13.0"
   }
 }
